@@ -63,7 +63,7 @@ Move Constructor called
 */
 ```
 
-![](b85f2aa1-55cc-5cf6-9e54-db08eb101e1c.svg) 
+![](c9af5518-02cb-7cb0-2500-d2333436f094.svg)
 
 
 
@@ -139,8 +139,8 @@ Copy Constructor called
 */
 ```
 
-![](c9af5518-02cb-7cb0-2500-d2333436f094.svg)
 
+![](b85f2aa1-55cc-5cf6-9e54-db08eb101e1c.svg) 
 ---
 
 ### **Example: Applying Both in a Class**
@@ -345,3 +345,21 @@ Here's how RAII works in practice:
 *   **Mutexes:** `std::mutex` and other synchronization primitives acquire and release locks in their constructors and destructors, simplifying thread synchronization and preventing deadlocks.
 
 RAII is deeply ingrained in the design of modern C++, and it's considered a fundamental principle for writing safe, robust, and efficient code. By leveraging RAII, developers can significantly reduce the cognitive load associated with resource management, allowing them to focus on the essential logic of their programs.
+
+----
+### NRVO (Named Return Value Optimization) and RVO (Return Value Optimization) 
+**NRVO (Named Return Value Optimization) and RVO (Return Value Optimization) are compiler optimizations that prevent unnecessary copying of objects when they are returned from functions.** They achieve this by constructing the returned object directly in the memory location where it will be used, rather than creating a temporary copy and then copying or moving it.
+
+* **Since C++17, mandatory elision of copy/move operations ensures that objects returned by value as nameless temporaries (`return object;`) incur no performance penalty.** This is known as mandatory elision.
+
+* **For local variables that are not function parameters, the compiler is permitted to perform non-mandatory elision of copy/move operations, known as NRVO (Named Return Value Optimization).** This optimization is not guaranteed by the standard.
+
+* **Compilers cannot apply mandatory nor non-mandatory elision when using `std::move()` to return an object (`return std::move(object);`).** As a result, the compiler falls back to move semantics if the object supports it or copy semantics if it does not.
+
+* **Using `std::move()` to return an object has a small performance impact compared to NRVO when the compiler falls back to move semantics, but it can have a significant performance impact when it falls back to copy semantics.**
+
+**Therefore, it's recommended to use `return object;` when returning a local variable or nameless temporary from a function and avoid using `std::move()`.**
+
+For NRVO, even though the copy/move constructors won't be called, they still need to be accessible; otherwise, the program will be ill-formed.
+
+(N)RVO works only for local variables or function parameters. Returning data members of an object never triggers (N)RVO.

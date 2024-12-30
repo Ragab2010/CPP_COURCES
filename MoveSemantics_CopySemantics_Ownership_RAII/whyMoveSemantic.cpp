@@ -20,10 +20,16 @@ public:
         data = new int[n];
         size = n;
     }
-
-    // Copy Constructor
+    
+    // Copy Constructor -Deep Copy
+    /*
+        MyVector myVec(5);
+        MyVector newVec = myVec;
+    */
     MyVector(const MyVector& other) {
         size = other.size;
+
+
         data = new int[size];
         for (size_t i = 0; i < size; ++i) {
             data[i] = other.data[i];
@@ -31,19 +37,32 @@ public:
         cout << "Copy Constructor called\n";
     }
 
-    // Move Constructor
+
+    // Move Constructor -Shallow Copy
+    /*
+        MyVector myVec(5);
+        MyVector newVec = std::move(myVec);
+    */
     MyVector(MyVector&& other) noexcept {
-        data = other.data;
         size = other.size;
+
+        data = other.data;
         other.data = nullptr;
         other.size = 0;
         cout << "Move Constructor called\n";
     }
 
     // Copy Assignment Operator
+    /*
+        MyVector myVec(5), otherVec(6);
+        otherVec = myVec;
+    */
     MyVector& operator=(const MyVector& other) {
+        /*
+            MyVector myVec(5);
+            myVec = myVec;
+        */
         if (this == &other) return *this; // Handle self-assignment
-
         delete[] data; // Clean up existing resource
 
         size = other.size;
@@ -56,6 +75,10 @@ public:
     }
 
     // Move Assignment Operator
+    /*
+        MyVector myVec(5), otherVec(6);
+        otherVec = std::move(myVec);
+    */
     MyVector& operator=(MyVector&& other) noexcept {
         if (this == &other) return *this; // Handle self-assignment
 
@@ -72,7 +95,9 @@ public:
 
     // Destructor
     ~MyVector() {
-        delete[] data;
+        if (data) {
+            delete[] data;
+        }
     }
 
     // Size accessor
@@ -91,10 +116,14 @@ public:
     }
     // Print function
     void print() const {
-        for (size_t i = 0; i < size; ++i) {
-            cout << data[i] << " ";
+        if (data) {
+            for (size_t i = 0; i < size; ++i) {
+                cout << data[i] << " ";
+            }
+            cout << endl;
+        } else {
+            cout << "Vector is empty or ownership transferred." << endl;
         }
-        cout << endl;
     }
 };
 
@@ -105,7 +134,8 @@ MyVector allocateArrayMyVector(int numberOfLocations) {
         myVec[i] = i + 1; // Initialize from 1 to numberOfLocations
     }
     // return myVec; // Return by value (leverages move semantics)
-    return std::move(myVec);
+    return myVec;     //return lvalue , transfer A copy of Resource
+    // return std::move(myVec);//return Rvalue , transfer Resource's ownership
 }
 
 // Function to allocate an array using `new` and initialize it
@@ -154,29 +184,43 @@ int main() {
     int numberOfLocations = 5;
 
     // Using the function with `new`
-    int* array = allocateArrayNew(numberOfLocations);
-    cout << "Array allocated with new: ";
-    for (int i = 0; i < numberOfLocations; ++i) {
-        cout << array[i] << " ";
-    }
-    cout << endl;
-    delete[] array; // Don't forget to free memory!
+    // int* array = allocateArrayNew(numberOfLocations);
+    // cout << "Array allocated with new: ";
+    // for (int i = 0; i < numberOfLocations; ++i) {
+    //     cout << array[i] << " ";
+    // }
+    // cout << endl;
+    // delete[] array; // Don't forget to free memory!
 
 
 
-    // Using the function with `vector`
-    vector<int> returnVec = allocateArrayVector(numberOfLocations);
-    cout << "Array allocated with vector: ";
-    for (int val : returnVec) {
-        cout << val << " ";
-    }
-    cout << endl;
+    // // Using the function with `vector`
+    // vector<int> returnVec = allocateArrayVector(numberOfLocations);
+    // cout << "Array allocated with vector: ";
+    // for (int val : returnVec) {
+    //     cout << val << " ";
+    // }
+    // cout << endl;
 
     // Using the function with `MyVector`
     // MyVector myVec = allocateArrayMyVector(numberOfLocations);
     // cout << "Array allocated with MyVector: ";
     // myVec.print();
 
+    ///////////////////////////
+    MyVector vec1(5) , other;
+    for (size_t i = 0; i < vec1.getSize(); ++i) {
+        vec1[i] = static_cast<int>(i + 1);
+    }
+
+    cout << "Vector 1: ";
+    vec1.print();
+
+    other = vec1;
+    cout << "Vector 1: ";
+    vec1.print();
+    cout << "other ";
+    other.print();
     return 0;
 }
 
