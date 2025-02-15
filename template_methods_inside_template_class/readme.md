@@ -1,4 +1,4 @@
-## ##  The code for write template methods/operation  at template class/struct
+##  The code for write template methods/operation  at template class/struct
 
 
 ```cpp
