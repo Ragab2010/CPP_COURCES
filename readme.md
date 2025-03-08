@@ -1,5 +1,3 @@
-Got it! Here's a `README.md` focused solely on promoting your YouTube channel and its playlists:
-
 ---
 
 # Welcome to My C++ YouTube Channel!
