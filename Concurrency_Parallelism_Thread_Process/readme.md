@@ -1,186 +1,182 @@
 ##   The code for Concurrency_Parallelism_Thread_Process  
 
 ```cpp
-#include <iostream>
-#include <stdexcept>
-#include <exception>
-#include <source_location>
 
-/*---->C++ Exception<----
---> noexcept Specifier, noexcept(expression) Specifier, noexcept(expression) Operator
 
-Exceptions Classes Hierarchy:
 
-std::exception
-  ├── std::logic_error
-  │     ├── std::domain_error
-  │     ├── std::invalid_argument
-  │     ├── std::length_error
-  │     ├── std::out_of_range
-  │     └── std::future_error
-  └── std::runtime_error
-        ├── std::overflow_error
-        ├── std::underflow_error
-        ├── std::range_error
-        ├── std::system_error
-        └── std::regex_error
+/*---->C++ Concurrency<----
+Concurrency vs. Parallelism:
+Concurrency and parallelism are two related computer science concepts in programming and system/code design. 
+    Both deal with executing multiple tasks, but they differ in how those tasks are managed and executed.    
+    
+    -Concurrency:
+    Analogy: Imagine a single chef (one CPU core) preparing multiple dishes. 
+        The chef switches between chopping vegetables for one dish, stirring a pot for another, 
+            and checking the oven for a third. The tasks overlap in time, but only 
+            one is actively being worked on at any given moment.
+            --The chef prioritizes quick responses to customer orders, even if it means switching between tasks frequently.
+            -- if we want improve Determinism, The system (chef) is deterministic because the timing of each task is predictable and bounded.
 
-Runtime polymorphism: in C++ is primarily achieved through virtual functions and inheritance. 
-    --It allows you to call a subclass's overridden function/methods(what) 
-        using a base class pointer/reference at runtime. This is also known as dynamic binding.
+        --Concurrency is about dealing with multiple tasks at the same time , by executing them simultaneously. 
+        --The tasks overlap in time, but only one is actively being worked on at any given moment.
+            Example: A single-core CPU running multiple threads by rapidly switching between them (time-slicing).
+        --Concurrency is about task management. It allows a program to make progress on multiple things 
+            by interleaving their execution, even on a single thread or core.
+        --Use Case: Concurrency is useful for improving responsiveness and resource utilization, 
+            especially in I/O-bound tasks (e.g., handling multiple network requests or user inputs).
 
-examples: std::exception & e = std::runtime_error("error");
-        e.what();<--- here we call the (what) method that at std::runtime_error object,
-                      because it declare in base calss as virtual.
+    -Parallelism:
+    Analogy: Now imagine multiple chefs (multiple CPU cores) working on different dishes at once. 
+    One chef chops vegetables, another stirs the pot, and a third bakes—all happening at the exact same time.
 
---evey custom exception calss have to Inherit from std::exception ensures your exception fits the standard exception model 
-    and can be handled consistently with other exceptions in the C++ standard library.
+    --Parallelism is about executing multiple tasks simultaneously, by leveraging multiple processors or cores.
+    -- all The tasks happening at the exact same time.
+        Example: A multi-core CPU running multiple threads in parallel, with each core executing a separate thread.
+    --Parallelism is about speed and throughput. It’s true multitasking, where independent tasks run concurrently
+             and simultaneously.
+    --Use Case: Parallelism is useful for improving performance in CPU-bound tasks 
+        (e.g., matrix multiplication, rendering, or data processing).
 
---Parent classes reference/pointer can refer to child classes,
-    and we can use runtime polymorphism to invoke the what() method.
+Real-World Analogy :Responsiveness VS Determinism
+    --Responsiveness: Think of a fast-food restaurant where the goal is to serve customers as quickly as possible, even if it means juggling multiple orders at once.
+    --Determinism: Think of a high-end restaurant where each course of a meal is served at a precise time, ensuring a consistent and predictable dining experience.
 
-Catching Exceptions in a Class Hierarchy:
-    --One feature of exception hierarchies is the ability to catch exceptions using polymorphism.
+Concurrency vs. Parallelism: The Difference
+    --Concurrency is a programming model—a way to structure your code to handle multiple tasks, whether they run at the same time or not.
+    --Parallelism is an execution model—it’s about actually running tasks simultaneously, which requires hardware support (e.g., multiple cores).
 
-Runtime Polymorphism in Action:
-    -Runtime polymorphism kicks in when you:
-    ---1-Throw a derived exception (e.g., std::runtime_error).
-    ---2-Catch it as a base type (std::exception&).
-    ---3-Call what(), and the derived class’s version runs due to the virtual dispatch.
+Concurrency Enables Parallelism:
+    --Concurrency provides the structure and design patterns (e.g., threads, tasks, or coroutines) that make parallelism possible.
+    --For example, a concurrent program can be executed in parallel if the hardware supports it (e.g., multiple cores).
 
-C++20 std::source_location:
-    --utility captures compile-time information about the call site—think of 
-        it as a modern replacement for macros like __FILE__ , __LINE__ and __FUNC__.
-The <source_location> header defines a class called std::source_location that contains the following member functions:
-    1. file_name(): Returns the name of the source file (as a const char*).
-    2. line(): Returns the line number in the source file (as unsigned int).
-    3. column(): Returns the column number in the source file (as unsigned int).
-    4. function_name(): Returns the name of the function (as a const char*).
+Parallelism Requires Concurrency:
+    --To achieve parallelism, you need a concurrent design that allows tasks to be divided and executed independently.
 
--noexcept Specifier: use it at prototype of methods/functions 
-    --used to mark a function as not throwing any exceptions.
-    --void printValues() noexcept;
-           printValues() function indicating that it does not allow any exceptions.
-    --If a function is marked with noexcept but somehow throws an exception, C++ will invoke std::terminate() to terminate the application.
-    --you can mark the overridden virtual method as noexcept(even if the version in the base class is not noexcept). 
-    --If the base class method is noexcept, the overridden virtual method should also not throw any exceptions.
+Concurrency Without Parallelism:
+    --Concurrency can exist without parallelism. For example, a single-core CPU can run a concurrent program by interleaving tasks, even though only one task is executed at a time.
 
--noexcept(expression) Specifier
-    --if expression == true  ----> noexcept(true)   = noexcept --> a function as not throwing any exceptions.
-    --if expression == false ----> noexcept(false) != noexcept --> a function as can throw any exceptions.
+Parallelism Without Concurrency:
+    --Parallelism without concurrency is rare. Typically, parallelism relies on concurrent structures (e.g., threads or processes) to divide and execute tasks simultaneously.
 
--noexcept(expression) Operator
-    --A compile-time operator that evaluates whether an expression is noexcept  or No.
-    --return true if the expression is noexcept, false otherwise.
+Process vs Thread:---> dealing with multitasking and concurrent execution.
+
+Analogy:Processes and Threads in the Chef Example
+    Processes:
+        --A process is like a separate kitchen with its own resources (e.g., stove, oven, utensils) and a dedicated chef.
+        --Each kitchen operates independently and prepares a single dish from start to finish.
+        --Processes do not share resources directly; they are isolated from each other.
+
+    Threads:
+        --A thread is like a single chef in a kitchen who can work on multiple tasks (e.g., chopping vegetables, boiling pasta, grilling meat) concurrently.
+        --All threads share the same resources (e.g., stove, oven, utensils) within the same kitchen.
+        --Threads are lightweight and can switch between tasks quickly.
+
+Process:
+    --A process is an instance of a running program. It has its own memory space, resources, and state.
+Key Characteristics:
+    ---Isolation: Each process operates independently and is isolated from other processes.
+    ---Memory: A process has its own address space (code, data, heap, stack).
+    ---Overhead: Processes are heavyweight because they require more resources (memory, CPU) to create and manage.
+    ---Communication: Inter-process communication (IPC) is required for processes to share data (e.g., pipes, sockets, shared memory).
+    ---Use Case: Processes are used when tasks need strong isolation and security (e.g., running separate applications).
+
+Thread:
+    --Definition: A thread is a lightweight unit of execution within a process. Multiple threads can exist within a single process and share the same memory space.
+
+Key Characteristics:
+    --Shared Memory: Threads within the same process share the same address space and resources.
+    --Lightweight: Threads are faster to create and manage compared to processes.
+    --Communication: Threads can communicate directly through shared memory, making data sharing easier but requiring synchronization (e.g., mutexes, semaphores).
+    --Concurrency: Threads enable concurrent execution within a process.
+    --Use Case: Threads are used for tasks that require high performance and shared data (e.g., parallel computations, handling multiple connections in a server).
+
+--Memory Layout for process & thread:
+
++-----------------------+
+|      Kernel Space     |  (High Memory)
++-----------------------+
+|      Stack            |  (Grows downwards)
++-----------------------+
+|    Thread 1 Stack     |  (Private stack for Thread 1)
++-----------------------+
+|    Thread 2 Stack     |  (Private stack for Thread 2)
++-----------------------+
+|         ...           |
++-----------------------+
+|      Memory Mapping   |  (Shared libraries, mmap)
++-----------------------+
+|      Heap             |  (Grows upwards)
+|                       |
+|      ...              |
+|                       |
++-----------------------+
+|      BSS              |  (Uninitialized data)
++-----------------------+
+|      Data Segment     |  (Initialized data)
++-----------------------+
+|      Text Segment     |  (Code)
++-----------------------+  (Low Memory)
+
+
+
+Memory, Creation and Overhead, Communication, Context Switching, Scalability.
+| **Aspect**           | **Process**                               | **Thread**                               |
+---------------------------------------------------------------------------------------------
+| Definition          | An independent program in execution.      | A lightweight unit of execution within a process. |
+| Memory Space        | Has its own isolated virtual memory space.| Shares the process’s memory space (heap, data, text). |
+| Stack               | Has one stack (for a single-threaded process). | Each thread has its own private stack.  |
+| Resource Ownership  | Owns resources (memory, file handles, etc.). | Shares resources with other threads in the process. |
+| Creation Overhead   | Higher (requires duplicating memory, resources). | Lower (just allocates a stack and registers). |
+| Communication       | Inter-process communication (IPC) needed (e.g., pipes, sockets). | Direct memory access (shared variables), faster. |
+| Isolation           | Fully isolated from other processes.     | Not isolated—shares memory with other threads. |
+| Execution           | Runs independently, scheduled by OS.     | Runs within a process, scheduled by OS or thread library. |
+| Example in C++      | Running two `main()` programs separately.| Using `std::thread` within one program. |
+| Synchronization     | Not needed unless IPC is used.           | Often requires mutexes, locks (e.g., `std::mutex`). |
+| Termination         | Kills all its threads when it ends.      | Can end independently, but process continues unless all threads stop. |
+| Context Switching   | Slower (switching entire memory space).  | Faster (same address space, just stack/registers). |
+---------------------------------------------------------------------------------------------
+
+Relationship Between Processes and Threads
+Threads Exist Within Processes:
+    --A process can have one or more threads. The first thread is called the main thread.
+    --Threads share the process's resources (memory, files, etc.) but have their own stack and registers.
+
+Processes Provide Isolation, Threads Provide Concurrency:
+    --Processes are isolated from each other, providing security and stability.
+    --Threads enable concurrent execution within a process, improving performance and responsiveness.
+
+Communication and Synchronization:
+    --Processes: Require IPC mechanisms (e.g., pipes, sockets) to communicate, which is slower and more complex.
+    --Threads: Can communicate directly through shared memory, but synchronization is required to avoid race conditions.
+
+Resource Usage:
+    --Processes: Consume more resources (memory, CPU) because each process has its own address space.
+    --Threads: Consume fewer resources because they share the same address space.
+
+how can how  A “hardware thread”  the number of independent execution contexts a CPU 
+    that can handle at once. This is tied to the CPU’s architectur?
+    --std::cout << "Hardware concurrency: " << std::thread::hardware_concurrency() << "\n";
+    --run at bash : nproc
+
+std::thread:
+    --std::thread is a class in the C++ Standard Library that represents a single thread of execution.
+    --Purpose: To execute a function or callable object (like a lambda or functor) in a separate thread.
+    --Key Idea: Each std::thread object corresponds to an OS thread, and the OS schedules it to run on available hardware threads.
+    --The constructor of the thread class is a variadic template, meaning it can accept any number of arguments. 
 
 */
 
-void f1(){}
-void f2()noexcept{throw std::runtime_error("exception");}
-void f3()noexcept(noexcept(f1())) {} //noexcept(f1())-->false
-void f4()noexcept(noexcept(f2())) {} //noexcept(f2())-->true
+#include <iostream>
+#include <thread>
 
-
-int main(){
-    std::cout<<std::boolalpha
-        <<"f1():"<<noexcept(f1())<<std::endl
-        <<"f2():"<<noexcept(f2())<<std::endl
-        <<"f3():"<<noexcept(f3())<<std::endl
-        <<"f4():"<<noexcept(f4())<<std::endl;
-    //f2();-->here going to throw exception
-
-    return 0;
-}
-
-
-
-
-```
-
-
-##  The code for custom exception class with std::source_location.
-
-```cpp
-//Write your custom exception class with std::source_location.
-
-class Myexception:public std::runtime_error{
-public:
-   // Myexception(std::string message): std::runtime_error{std::move(message)}{};
-   using std::runtime_error::runtime_error;
-};
-
-
-class MyexceptionWithLocaton:public std::exception{
-public:
-    MyexceptionWithLocaton(std::string message , std::source_location location=std::source_location::current())
-    :std::exception{} , mMessage{std::move(message)} ,mLocation{std::move(location)}{}
-
-    virtual const char* what() const  noexcept override{
-        return mMessage.c_str();
-    }
-
-    virtual  const std::source_location & where() const noexcept{
-        return mLocation;
-    }
-
-
-private:
-    std::string mMessage;
-    std::source_location mLocation;
-};
-
-void level1(){
-    throw MyexceptionWithLocaton("--->exception<---");
+void say_hello() {
+    std::cout << "Hello from thread!\n";
 }
 
 int main() {
-
-    try{
-        level1();//here
-    }
-    catch(const MyexceptionWithLocaton & e){
-        std::cout<<"MyexceptionWithLocaton:"<<e.what()<<std::endl;
-        auto location = e.where();
-        std::cout<<"line :"<<location.line()<<std::endl;
-        std::cout<<"function_name() :"<<location.function_name()<<std::endl;
-        std::cout<<"file_name() :"<<location.file_name()<<std::endl;
-
-    }
-    // catch(const std::overflow_error & e){
-    //     std::cout<<"std::overflow_error:"<<e.what()<<std::endl;
-    // }
-    // catch(...){
-    //     std::cout<<"std::exception:"<<std::endl;
-    // }
-    // std::cout<<"after the exception main"<<std::endl;
-
-    return 0;
-}
-
-
-
-```
-
-
-
-##  The code for Catching Exceptions in a Class Hierarchy.
-
-```cpp
-//Catching Exceptions in a Class Hierarchy
-void throwSomething() {
-
-    throw std::runtime_error("Runtime failure!");
-}
-
-int main() {
-    try {
-        throwSomething();  
-    } 
-    //const std::exception& e = std::runtime_error("Runtime failure!");
-    catch (const std::exception& e) {  // Catch as base class
-        std::cout << "Caught: " << e.what() << "\n";
-        // e could be invalid_argument or runtime_error, but what() works polymorphically
-    }
+    std::thread t(say_hello); // OS creates and schedules a thread
+    t.join(); // Wait for thread to finish
+    std::cout << "Main thread done.\n";
     return 0;
 }
 
