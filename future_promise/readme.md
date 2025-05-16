@@ -1,4 +1,4 @@
-##  The code & explanation  for  condition_variable
+##  The code & explanation  for std::future and std::promise
 
 ```cpp
 /*
@@ -69,5 +69,128 @@
 
     ///////////////////
 */
+
+```
+
+
+##  The code for std::future and std::promise
+
+```cpp
+
+#include <iostream>
+#include <future>
+#include <thread>
+
+
+void compute(std::promise<int> result_promise) {
+    int result = 42;
+    result_promise.set_value(result); // Set the result for the future
+}
+
+
+int main() {
+
+    std::promise<int> prom;  //producer             // Create promise
+    std::future<int> fut;   //consumer
+    fut = prom.get_future(); //Get future
+
+    std::thread t(compute, std::move(prom));  // Launch thread
+
+    std::cout << "Waiting for result...\n";
+    std::cout << "Result: " << fut.get() << "\n"; // Wait and get value
+
+    t.join();
+}
+
+
+```
+
+
+##  The code  for std::future and std::promise
+
+```cpp
+
+
+#include <iostream>
+#include <future>
+#include <thread>
+
+int compute() {
+    int result = 42;
+    return result;
+}
+
+int main() {
+
+    
+    std::future<int> fut = std::async(std::launch::async, compute);  
+
+    std::cout << "Waiting for result...\n";
+    std::cout << "Result: " << fut.get() << "\n"; // Wait and get value
+
+}
+
+```
+
+
+##  The code std::future and std::promise  to Handling Exceptions with std::thread
+
+```cpp
+#include <iostream>
+#include <future>
+#include <thread>
+
+void compute(std::promise<int> prom) {
+    try {
+        throw std::runtime_error("Something went wrong");
+    } catch (...) {
+        prom.set_exception(std::current_exception()); // Send it to future
+    }
+}
+
+int main() {
+    std::promise<int> prom;//producer-->first terminal  com 
+    std::future<int> fut = prom.get_future();//consumer -> other terminal com
+
+    std::thread t(compute, std::move(prom));
+
+    try {
+        int val = fut.get(); // rethrows the exception
+    } catch (const std::exception& e) {
+        std::cerr << "Promise error: " << e.what() << "\n";
+    }
+
+    t.join();
+}
+
+```
+
+
+
+##  The code Handling Exceptions in Asynchronous Functions with std::async
+```cpp
+
+#include <iostream>
+#include <future>
+#include <stdexcept>
+
+int risky_divide(int a, int b) {
+    if (b == 0)
+        throw std::runtime_error("Divide by zero!");
+    return a / b;
+}
+
+int main() {
+    std::future<int> fut = std::async(std::launch::async, risky_divide, 10, 0);
+
+    try {
+        int result = fut.get();  // Exception will be re-thrown here
+        std::cout << "Result: " << result << "\n";
+    } catch (const std::exception& e) {
+        std::cerr << "Caught async error: " << e.what() << "\n";
+    }
+}
+
+
 
 ```
