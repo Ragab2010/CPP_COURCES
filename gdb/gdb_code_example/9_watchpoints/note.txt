@@ -1,0 +1,39 @@
+Alright — let’s make a GDB watchpoints example from scratch, with code, GDB session, and full explanation.
+Watchpoints are used when you want GDB to pause execution whenever the value of a variable changes (or in some cases, when it’s read).
+
+1️⃣ Example C program — watchpoint_demo.c
+
+#include
+#include
+
+int counter = 0;
+
+void increment_counter() {
+    counter++;
+    printf("Counter incremented to: %d\n", counter);
+}
+
+int main() {
+    printf("Initial counter value: %d\n", counter);
+
+    for (int i = 0; i `** → Stops when the expression’s value changes
+  Example: watch counter
+rwatch * → Stops when the expression is *read**
+  Example: rwatch counter
+awatch * → Stops when the expression is *read or written**
+  Example: awatch counter
+
+6️⃣ Listing & deleting watchpoints
+
+info watchpoints   # Shows all watchpoints
+delete 1           # Deletes watchpoint with ID 1
+
+7️⃣ Key points about watchpoints
+
+They are hardware-assisted on most modern CPUs (fast & efficient).
+Limited in number (depends on CPU, often 2–4).
+Unlike breakpoints, they don’t require modifying code.
+Work best for global or static variables; for local variables, the watchpoint works only when the function is active.
+
+If you want, I can give you a more advanced watchpoint example where GDB tracks struct field changes and stops exactly at the line that changed it.
+That’s a neat trick for debugging complex programs.

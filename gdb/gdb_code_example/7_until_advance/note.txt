@@ -1,0 +1,85 @@
+Alright — until and advance in GDB are both execution control commands, but they work a little differently.
+Let’s go over them with a clear example so you can see when to use each.
+
+1. Quick explanation
+
+| Command       | Purpose                                                                                                  |
+| ------------- | -------------------------------------------------------------------------------------------------------- |
+| until   | Run until the current function returns OR until reaching a specified location in the same frame.   |
+| advance | Run until a specific line or address, stopping exactly there (even if it’s in a different function). |
+
+2. Example program: until_advance_demo.c
+
+#include
+
+void step3() {
+    printf("Step 3 start\n");
+    printf("Step 3 middle\n");
+    printf("Step 3 end\n");
+}
+
+void step2() {
+    printf("Step 2 start\n");
+    step3();
+    printf("Step 2 end\n");
+}
+
+void step1() {
+    printf("Step 1 start\n");
+    step2();
+    printf("Step 1 end\n");
+}
+
+int main() {
+    step1();
+    return 0;
+}
+
+3. Compile
+
+gcc -g -o until_advance_demo until_advance_demo.c
+
+4. Demo in GDB
+
+gdb ./until_advance_demo
+
+A. Using until
+
+(gdb) break step2
+(gdb) run
+
+When you stop at the first line of step2():
+
+(gdb) until
+
+This runs until the end of step2 (right before it returns to step1).
+If you give a line number:
+
+(gdb) until 16
+
+it will run until line 16 inside the same frame.
+
+⚠️ If you are inside a loop, until can skip ahead to after the loop if given a target line.
+
+B. Using advance
+
+Suppose you’re in main() and want to jump directly to the first line of step3() without hitting any other breakpoints:
+
+(gdb) break main
+(gdb) run
+(gdb) advance step3
+
+Execution runs forward and stops exactly at step3(), regardless of how many functions it needs to pass through.
+
+You can also give it a line number:
+
+(gdb) advance 22
+
+This moves execution forward to line 22 in the current source file.
+
+5. Key difference in behavior
+
+until → good for finishing the current function or skipping part of a loop.
+advance → good for jumping ahead to a specific location, skipping all in-between code.
+
+If you want, I can now create a loop example where until skips to after the loop and advance jumps into a function inside the loop — that shows the subtle difference much more clearly.

@@ -1,0 +1,39 @@
+          Alright — let’s go step-by-step and make an example for Conditional Breakpoints in GDB, with a real C program to test it, then I’ll explain the concept.
+
+1. What is a Conditional Breakpoint?
+
+A conditional breakpoint in GDB is a breakpoint that only stops your program when a certain condition is true.
+
+Syntax:
+
+break  if
+
+Condition is an expression evaluated at runtime.
+Useful for avoiding stopping every time the breakpoint is hit — it stops only when the condition is met.
+
+2. Example C program
+
+#include
+
+void process(int value) {
+    printf("Processing value: %d\n", value);
+}
+
+int main() {
+    for (int i = 0; i  7
+
+Here:
+
+1 is the breakpoint number from info breakpoints.
+The condition is changed so it breaks when value > 7.
+
+7. Useful Commands
+
+info breakpoints → shows all breakpoints and their conditions.
+condition   → set/change a condition.
+condition  → remove the condition.
+
+If you want, I can also give you an example combining conditional breakpoints with until, display, and x so you can see them working together in one debugging session.
+That way, you’d see a "real debugging workflow" in action.
+
+          

@@ -1,0 +1,59 @@
+Alright — let’s make an example where you can see a segmentation fault happen, then use GDB’s backtrace to pinpoint where and why it happened.
+
+1. Example program: segfault_demo.c
+#include <stdio.h>
+
+void crash_me() {
+    int *ptr = NULL;  // Null pointer
+    *ptr = 42;        // Writing to NULL → segmentation fault
+}
+
+void intermediate_function() {
+    crash_me();
+}
+
+int main() {
+    printf("Program started...\n");
+    intermediate_function();
+    printf("Program finished.\n");
+    return 0;
+}
+2. Compile with debug symbols
+gcc -g -o segfault_demo segfault_demo.c
+3. Run inside GDB
+gdb ./segfault_demo
+A. Run the program
+(gdb) run
+You’ll see something like:
+
+Program started...
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000555555555154 in crash_me () at segfault_demo.c:6
+6       *ptr = 42;
+B. Get the backtrace
+(gdb) backtrace
+Example output:
+
+#0  crash_me () at segfault_demo.c:6
+#1  0x0000555555555169 in intermediate_function () at segfault_demo.c:10
+#2  0x0000555555555178 in main () at segfault_demo.c:15
+#0 → The exact line that caused the crash (*ptr = 42;)
+#1 → Who called it (intermediate_function)
+#2 → Who called that (main)
+C. View the full frame info
+(gdb) frame 0
+Shows details for the frame at index 0 (the crashing point).
+
+You can move between frames:
+
+(gdb) frame 1   # Go to intermediate_function
+(gdb) frame 2   # Go to main
+D. Why this is powerful
+Segfaults usually mean invalid memory access (NULL deref, buffer overflow, etc.).
+Backtrace shows the exact path of function calls that led to the crash.
+You can inspect variables at each frame to find bad values:
+(gdb) print ptr
+$1 = (int *) 0x0
+If you want, I can also give you an example with a more complex data structure where the segfault happens deep in the call chain, so we can use backtrace + up/down navigation to track the bug.
+That will show how to actually fix a segfault, not just find it.

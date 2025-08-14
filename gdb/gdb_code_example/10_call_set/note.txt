@@ -1,0 +1,68 @@
+          Got it — you want an example that uses both call and set in GDB together so you can see how they work in combination.
+
+Here’s a minimal demonstration.
+
+Example C Code (call_set_demo.c)
+
+#include
+
+int multiply(int a, int b) {
+    return a * b;
+}
+
+int main() {
+    int x = 3;
+    int y = 4;
+    int result = multiply(x, y);
+
+    printf("Result: %d\n", result);
+
+    return 0;
+}
+
+Compile with Debug Symbols
+
+gcc -g call_set_demo.c -o call_set_demo
+
+GDB Session (Using call + set Together)
+
+gdb ./call_set_demo
+
+Set a breakpoint before the function call
+
+      (gdb) break main
+   (gdb) run
+
+Change a variable with set
+
+      (gdb) set var x = 10
+
+Call a function manually with call
+
+      (gdb) call multiply(x, y)
+   $1 = 40
+
+Combine them in sequence to affect program flow
+
+      (gdb) set var y = 20
+   (gdb) call multiply(x, y)
+   $2 = 200
+
+Continue execution
+
+      (gdb) continue
+   Result: 200
+
+Explanation
+
+set var  = ** → Directly changes a variable in memory while the program is paused.
+call (args...)** → Executes a function call in the context of the paused program.
+When you combine them, you can:
+
+  Modify variables before calling a function.
+  Simulate alternate execution paths without recompiling.
+  Test different inputs dynamically.
+
+If you want, I can make you a more advanced call + set example where you change variables mid-loop and call a function to alter behavior while the program is running. That would really show the power of the combo.
+
+          

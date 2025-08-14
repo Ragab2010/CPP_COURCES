@@ -1,0 +1,110 @@
+Alright — let’s make a practical GDB print command playground so you can try all the main options and variations in one place.
+
+We’ll create a C program with different variable types, then explore print in GDB with different formats, dereferencing, struct inspection, array slicing, pointer following, and expressions.
+
+1. Example C program: print_demo.c
+#include <stdio.h>
+#include <string.h>
+
+struct Person {
+    char name[20];
+    int age;
+};
+
+int main() {
+    int num = 42;
+    float pi = 3.14159;
+    char ch = 'A';
+    char str[] = "Hello, GDB!";
+    int arr[] = {10, 20, 30, 40, 50};
+
+    struct Person p1;
+    strcpy(p1.name, "Alice");
+    p1.age = 30;
+
+    int *ptr = arr; // pointer to first element of arr
+
+    printf("Variables are initialized.\n");
+    return 0;
+}
+2. Compile with debug info
+gcc -g -o print_demo print_demo.c
+3. GDB session with all print tricks
+gdb ./print_demo
+Set a breakpoint after variables are initialized:
+
+(gdb) break 18
+(gdb) run
+Now we can test all forms of print:
+
+A. Basic variable printing
+(gdb) print num
+$1 = 42
+(gdb) print pi
+$2 = 3.14159
+(gdb) print ch
+$3 = 65 'A'
+B. Forcing a specific format
+/d → decimal
+/x → hexadecimal
+/o → octal
+/t → binary
+/c → character
+/f → floating point
+(gdb) print/d num
+$4 = 42
+(gdb) print/x num
+$5 = 0x2a
+(gdb) print/t num
+$6 = 101010
+(gdb) print/c num
+$7 = '*'
+C. Printing strings
+(gdb) print str
+$8 = "Hello, GDB!"
+If you want to see memory as bytes:
+
+(gdb) x/12bx str
+D. Printing arrays
+(gdb) print arr
+$9 = {10, 20, 30, 40, 50}
+Partial array:
+
+(gdb) print arr[0]
+$10 = 10
+(gdb) print arr[0]@3
+$11 = {10, 20, 30}
+E. Printing pointers
+(gdb) print ptr
+$12 = (int *) 0x7fffffffe4c0
+(gdb) print *ptr
+$13 = 10
+Pointer arithmetic:
+
+(gdb) print *(ptr+2)
+$14 = 30
+F. Printing structs
+(gdb) print p1
+$15 = {name = "Alice", age = 30}
+Specific field:
+
+(gdb) print p1.age
+$16 = 30
+G. Printing expressions
+(gdb) print num + 5
+$17 = 47
+(gdb) print pi * 2
+$18 = 6.28318
+H. Printing with /m memory unit size
+/b → byte
+/h → halfword (2 bytes)
+/w → word (4 bytes)
+/g → giant word (8 bytes)
+(gdb) print/xb num   # num as 1-byte hex
+(gdb) print/xh num   # num as 2-byte hex
+(gdb) print/xw num   # num as 4-byte hex
+Why this matters
+print in GDB is not just for variables — it’s a mini calculator, memory inspector, and debugger tool for checking data in different formats.
+
+If you want, I can add a table summarizing all print format options (/d, /x, /c, /f, /t, etc.) so you have it as a quick GDB cheat sheet.
+That would make it easier to remember.

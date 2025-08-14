@@ -1,0 +1,57 @@
+Alright — let’s walk through adding commands to a breakpoint in GDB with a complete working example, so you’ll be able to see exactly how it works.
+
+Example Program
+
+We'll write a C program where we’ll stop at a breakpoint and automatically run custom commands.
+
+// file: bp_commands.c
+#include
+
+void process_data(int n) {
+    printf("Processing value: %d\n", n);
+}
+
+int main() {
+    for (int i = 1; i print n
+call printf("n squared = %d\n", n*n)
+continue
+end
+
+Explanation:
+
+commands 1 — starts adding commands for breakpoint 1.
+print n — prints the parameter n each time.
+call printf(...) — calls printf directly from GDB to print n².
+continue — resumes program execution automatically after the commands run.
+end — ends the command list.
+
+3️⃣ Run the program
+
+(gdb) run
+
+Output:
+
+Breakpoint 1, process_data (n=1) at bp_commands.c:5
+5	    printf("Processing value: %d\n", n);
+$1 = 1
+n squared = 1
+Breakpoint 1, process_data (n=2) at bp_commands.c:5
+5	    printf("Processing value: %d\n", n);
+$2 = 2
+n squared = 4
+...
+
+The breakpoint hits every time process_data() is called, runs our custom commands, and continues automatically without manual continue.
+
+📌 Notes
+
+You can use any GDB command inside the commands block: info locals, x, set, bt, watch, etc.
+If you omit continue, GDB will stop normally after executing the commands.
+You can target multiple breakpoints:
+
+    commands 1 2
+  ...
+  end
+
+If you want, I can also show you how to combine this with a conditional breakpoint so the commands only run when n meets a certain condition, for example n > 3.
+Do you want me to do that next?

@@ -1,0 +1,13 @@
+1- use -g compiler option and without -g and show the sections by readelf -WS 
+2-run
+3-breakpoint at main , info break , next , continue , delete breakpoint , enable disable breakpoint
+4- step , finish , start , reverse-next/step/continue
+5-passing args by gdb --args , run , start
+6-segmentation fault
+7-print , ptype
+8-display
+9-until , advance 
+10-frame , bt 
+11-condition breakpoint
+12-breakpoint command
+

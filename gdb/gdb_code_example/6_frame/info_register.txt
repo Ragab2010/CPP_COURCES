@@ -1,0 +1,48 @@
+In GDB, the command to display the current contents of the CPU registers is:
+
+info registers
+
+Example usage
+
+If you’re debugging a simple program and stop at a breakpoint:
+
+(gdb) info registers
+
+You might see something like (x86-64 example):
+
+rax            0x0                 0
+rbx            0x0                 0
+rcx            0x7ffff7de6200      140737351787520
+rdx            0x7ffff7faab78      140737353417976
+rsi            0x1                 1
+rdi            0x7fffffffe4a8      140737488348712
+rbp            0x7fffffffe3f0      0x7fffffffe3f0
+rsp            0x7fffffffe3d0      0x7fffffffe3d0
+r8             0x0                 0
+r9             0x0                 0
+r10            0x0                 0
+r11            0x0                 0
+r12            0x0                 0
+r13            0x0                 0
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555164      0x555555555164
+eflags         0x202               [ IF ]
+
+The first column is the register name.
+The second column is the raw value (in hex by default).
+The third column is the interpreted value (decimal or address).
+
+Variations
+
+Only floating-point registers**:
+
+info float
+
+Only vector (SSE/AVX) registers**:
+
+info all-registers
+
+(This includes general-purpose, floating-point, and SIMD registers.)
+
+If you want, I can make a small GDB example program where we set a breakpoint, then check registers before and after an instruction — so you can see exactly how they change during execution. That’s especially useful for low-level debugging like in embedded systems.

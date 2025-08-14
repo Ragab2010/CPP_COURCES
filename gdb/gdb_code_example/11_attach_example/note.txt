@@ -1,0 +1,110 @@
+Let’s go step-by-step with an Attaching to Processes in GDB example so you can fully understand how to debug a program that’s already running.
+
+1. Why attach?
+
+Sometimes you have a process that:
+
+Was not started under gdb (maybe it’s a service, daemon, or long-running job).
+Is showing a bug in production/testing, and you want to inspect its current state without restarting it.
+
+With attach, GDB connects to the process via its PID (Process ID).
+
+2. Example program
+
+Here’s a small C program that runs in a loop, printing a counter every second:
+
+// attach_example.c
+#include
+#include
+
+int main() {
+    int counter = 0;
+    while (1) {
+        printf("Counter: %d\n", counter++);
+        sleep(1);
+    }
+    return 0;
+}
+
+Compile without optimization and with debug info:
+
+gcc -g attach_example.c -o attach_example
+
+3. Run the program normally
+
+In one terminal:
+
+./attach_example
+
+Output:
+
+Counter: 0
+Counter: 1
+Counter: 2
+...
+
+4. Find the process ID (PID)
+
+Open another terminal and run:
+
+ps aux | grep attach_example
+
+Example output:
+
+ragab    14251  0.0  0.0   2416   888 pts/1    S+   17:22   0:00 ./attach_example
+
+Here the PID is 14251.
+
+5. Attach GDB to the running process
+
+In the second terminal:
+
+gdb -p 14251
+
+You’ll see something like:
+
+Attaching to process 14251
+Reading symbols from ./attach_example...
+0x00007f4c32a9c4d3 in __nanosleep_nocancel () from /lib64/libc.so.6
+(gdb)
+
+6. Inspect and debug
+
+While attached, you can:
+
+Check variables**:
+
+(gdb) info locals
+(gdb) p counter
+
+Set breakpoints**:
+
+(gdb) break main
+
+Step through code**:
+
+(gdb) continue
+
+7. Detach or kill
+
+Detach and let it continue running:**
+
+(gdb) detach
+
+Kill the process from GDB:**
+
+(gdb) kill
+
+8. Key GDB commands for attaching
+
+| Command                     | Description                            |
+| --------------------------- | -------------------------------------- |
+| gdb -p               | Attach to running process              |
+| attach  (inside gdb) | Attach after starting gdb without args |
+| detach                    | Stop debugging but let process run     |
+| kill                      | Terminate the process                  |
+| info proc                 | Show process info (OS dependent)       |
+
+✅ Tip: You can also attach to background services or daemons as long as you have permission (you might need sudo).
+
+If you want, I can make a combined example where we attach to the process, change the counter variable using set, and then continue execution so you see live modification of a running program. That’s a fun one for GDB.

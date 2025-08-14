@@ -1,0 +1,96 @@
+Alright — let’s cover GDB’s display command, which is like telling GDB:
+"Hey, automatically show me this thing every time the program stops."
+
+It’s very handy for tracking variables, expressions, or memory without having to keep typing print each time.
+
+1. Example program: display_demo.c
+
+#include
+
+int main() {
+    int counter = 0;
+
+    for (int i = 0; i < 5; i++) {
+        counter += i;
+        printf("i = %d, counter = %d\n", i, counter);
+    }
+
+    return 0;
+}
+
+2. Compile
+
+gcc -g -o display_demo display_demo.c
+
+3. Demo in GDB
+
+gdb ./display_demo
+
+Set a breakpoint inside the loop:
+
+(gdb) break 6
+(gdb) run
+
+A. Basic usage
+
+(gdb) display i
+(gdb) display counter
+
+Now, every time the program stops (breakpoint, step, next), GDB will automatically print:
+
+1: i = 0
+2: counter = 0
+
+The number before each variable (1:, 2:) is its display number.
+
+B. Display with expressions
+
+(gdb) display counter * 2
+
+Shows computed values automatically.
+
+C. Change format
+
+(gdb) display/x counter
+
+Displays in hexadecimal every time.
+
+Formats:
+
+/d → decimal
+/x → hex
+/t → binary
+/o → octal
+/c → char
+/f → float
+
+D. Display memory
+
+(gdb) display/xw &counter
+
+Shows counter’s memory location in hex, word-sized.
+
+E. See what’s currently displayed
+
+(gdb) info display
+
+F. Stop displaying something
+
+(gdb) undisplay 2
+
+Removes display #2 from the list.
+
+G. Disable & re-enable
+
+(gdb) disable display 1
+(gdb) enable display 1
+
+This lets you temporarily turn off a watch without deleting it.
+
+Why display is useful
+
+Great for tracking variables over time (loops, recursion).
+Saves typing — you don’t need to keep running print.
+Works well with next or step to watch changes happen live.
+
+If you want, I can extend this into a loop + display example where we watch multiple variables and even array elements update automatically during stepping — feels like a mini live dashboard in GDB.

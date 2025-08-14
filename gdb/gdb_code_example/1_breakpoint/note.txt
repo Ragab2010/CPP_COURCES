@@ -1,0 +1,111 @@
+Got it — let’s start with breakpoints in GDB. I’ll give you a small C program you can compile and run under GDB, then show you how to use breakpoints, and explain exactly what’s happening.
+
+  
+
+1\. Example C program: breakpointdemo.c
+------------------------------------------
+
+    include <stdio.h>
+    
+    int add(int a, int b) {
+        return a + b;
+    }
+    
+    int multiply(int a, int b) {
+        return a  b;
+    }
+    
+    int main() {
+        int x = 5, y = 3;
+        int sum = add(x, y);
+        int product = multiply(sum, y);
+    
+        printf("Sum: %d\n", sum);
+        printf("Product: %d\n", product);
+    
+        return 0;
+    }
+    
+
+  
+
+2\. Compile with debug symbols
+------------------------------
+
+    gcc -g -o breakpointdemo breakpointdemo.c
+    
+
+   The -g option tells GCC to include debug information so GDB knows about your functions, variable names, and source lines.
+
+  
+
+3\. Running in GDB and using breakpoints
+----------------------------------------
+
+    gdb ./breakpointdemo
+    
+
+Inside GDB:
+
+ A. Set a breakpoint at a function
+
+    (gdb) break add
+    
+
+   This stops execution at the first instruction of the add function.
+
+ B. Set a breakpoint at a specific line number
+
+    (gdb) break breakpointdemo.c:14
+    
+
+   Stops when line 14 in breakpointdemo.c is reached.
+
+ C. Set a conditional breakpoint
+
+    (gdb) break multiply if a > 5
+    
+
+   Execution stops only if the value of a in multiply is greater than 5.
+
+ D. List current breakpoints
+
+    (gdb) info breakpoints
+    
+
+ E. Remove a breakpoint
+
+    (gdb) delete 1
+    
+
+   Deletes breakpoint number 1.
+
+ F. Run the program
+
+    (gdb) run
+    
+
+   Execution stops at the first triggered breakpoint.
+
+ G. Continue execution after hitting a breakpoint
+
+    (gdb) continue
+    
+
+   Resumes program execution until the next breakpoint or program ends.
+
+  
+
+4\. Why breakpoints are important
+---------------------------------
+
+Breakpoints let you pause execution exactly where you want so you can:
+
+   Inspect variables (print sum, print a)
+   Step through the code line-by-line
+   Check function arguments and return values
+   Diagnose where logic or data goes wrong
+
+  
+
+If you want, next I can make an extended example showing temporary breakpoints, watchpoints, and pending breakpoints so you can handle cases when code isn’t loaded yet. Do you want me to expand into those advanced breakpoint types?

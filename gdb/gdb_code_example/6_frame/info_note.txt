@@ -1,0 +1,24 @@
+
+
+Get Information about a Stack Frame
+=====================================
+
+You can get the information about a particular frame using ‘info frame [number]’ 
+
+(gdb) info frame  1   # list information about the current stack frame
+
+(gdb) info variables # list all global and static variables 
+
+(gdb) info locals   # list local variable values of current stack frame
+
+(gdb) info args     # list argument values of current stack frame
+
+
+(gdb) info registers        # list register values
+
+(gdb) info registers eax    # shows just the register eax
+
+
+(gdb) info breakpoints      # list status of all breakpoints
+
+

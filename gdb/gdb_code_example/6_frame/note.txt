@@ -1,0 +1,109 @@
+Alright — let’s go step-by-step on frames and stack frames in GDB, with a hands-on example that will let you see exactly what’s going on.
+
+1. What is a "frame" in GDB?
+
+In GDB terms, a frame is basically a snapshot of a function’s stack frame — the chunk of memory the function uses on the call stack while it’s running.
+
+Each frame contains:
+
+The function name
+Its arguments and local variables
+The return address (where execution will go back after the function finishes)
+The saved registers and other housekeeping info
+
+When a program calls functions, each call gets its own stack frame.
+When you do a backtrace (bt), GDB shows all the frames currently in the call stack.
+
+2. Example C program: frames_demo.c
+
+#include
+
+void level3(int x) {
+    int l3_var = x * 10;
+    printf("In level3, l3_var = %d\n", l3_var);
+}
+
+void level2(int b) {
+    int l2_var = b + 5;
+    level3(l2_var);
+}
+
+void level1(int a) {
+    int l1_var = a - 2;
+    level2(l1_var);
+}
+
+int main() {
+    int main_var = 7;
+    level1(main_var);
+    return 0;
+}
+
+3. Compile with debug info
+
+gcc -g -o frames_demo frames_demo.c
+
+4. Run in GDB
+
+gdb ./frames_demo
+
+Set a breakpoint in level3:
+
+(gdb) break level3
+(gdb) run
+
+When the breakpoint hits, the stack looks like:
+
+A. Backtrace (all frames)
+
+(gdb) backtrace
+#0  level3 (x=10) at frames_demo.c:4
+#1  0x000055555555515e in level2 (b=5) at frames_demo.c:9
+#2  0x0000555555555174 in level1 (a=7) at frames_demo.c:14
+#3  0x0000555555555189 in main () at frames_demo.c:19
+
+#0** → Current frame (level3)
+#1** → Who called it (level2)
+#2** → Who called that (level1)
+#3** → Main program start
+
+B. Inspecting a specific frame
+
+(gdb) frame 1
+
+Moves to frame #1 (inside level2).
+Now:
+
+(gdb) info locals
+l2_var = 5
+(gdb) info args
+b = 5
+
+C. Moving up & down the call stack
+
+(gdb) up     # go toward main
+(gdb) down   # go toward current function
+
+D. Full frame info
+
+(gdb) info frame
+Stack level 0, frame at 0x7fffffffe4a0:
+ rip = 0x555555555144 in level3 (frames_demo.c:4); saved rip = 0x55555555515e
+ called by frame at 0x7fffffffe4c0
+ source language c.
+ Arglist at 0x7fffffffe490, args: x=10
+ Locals at 0x7fffffffe490, Previous frame's sp is 0x7fffffffe4a0
+ Saved registers:
+  rip at 0x7fffffffe498
+
+rip → instruction pointer (x86-64)
+Shows arguments, locals, and saved return address.
+
+E. Why frames are important in debugging
+
+Let you navigate the call stack when debugging complex crashes.
+See exactly what arguments and locals each function had when called.
+Crucial for analyzing segfaults and logic bugs that happen deep in the call chain.
+
+If you want, I can make a segfault example where we use frames to walk up from the crash point and find the bad argument value in an earlier frame — that’s how frames are really useful in real debugging.
+Do you want me to do that next?

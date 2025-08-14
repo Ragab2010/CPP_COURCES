@@ -1,0 +1,104 @@
+Perfect — the x command in GDB is like a raw memory microscope.
+It doesn’t care about variable names — it peeks directly into memory at any address you give it, with whatever format you choose.
+
+We can reuse the print_demo.c example from before, stop after initialization, and explore memory with x.
+
+1. Quick Recap: Compile & Breakpoint
+
+gcc -g -o print_demo print_demo.c
+gdb ./print_demo
+(gdb) break 18
+(gdb) run
+
+2. Syntax of x
+
+x/count[size] address
+
+count** → how many units to display
+format** → output format:
+
+  d → signed decimal
+  u → unsigned decimal
+  x → hex
+  o → octal
+  t → binary
+  c → character
+  f → float
+  s → string
+  i → instruction (disassembly)
+size** → memory unit size:
+
+  b → byte (1B)
+  h → halfword (2B)
+  w → word (4B)
+  g → giant word (8B)
+
+3. Examples with print_demo.c
+
+A. Look at integer in memory
+
+(gdb) x/wd &num
+0x7fffffffe4ac:  42
+
+/w → read 4 bytes at a time
+d → display as signed decimal
+
+B. See raw hex
+
+(gdb) x/wx &num
+0x7fffffffe4ac:  0x0000002a
+
+C. View multiple integers in an array
+
+(gdb) x/5wd arr
+0x7fffffffe490:  10  20  30  40  50
+
+D. View pointer target
+
+(gdb) print ptr
+$1 = (int *) 0x7fffffffe490
+(gdb) x/3wd ptr
+0x7fffffffe490:  10  20  30
+
+E. View characters in a string
+
+(gdb) x/s str
+0x7fffffffe460: "Hello, GDB!"
+
+Raw bytes:
+
+(gdb) x/12cb str
+0x7fffffffe460:  72 'H' 101 'e' 108 'l' 108 'l' 111 'o' 44 ',' 32 ' ' 71 'G' 68 'D' 66 'B' 33 '!'
+
+F. Dump struct contents
+
+(gdb) x/5wx &p1
+0x7fffffffe470:  0x656c6941 0x00000063 0x00000000 0x0000001e 0x00000000
+
+That’s "Alice" in ASCII in memory + padding + age=30.
+
+G. Disassemble instructions with x
+
+If we want to see machine code from main:
+
+(gdb) x/10i main
+
+Shows the next 10 instructions from main.
+
+H. Memory hex dump
+
+(gdb) x/20bx arr
+
+Shows 20 bytes starting from arr in hex, byte by byte.
+
+4. print vs x
+
+| Feature             | print                  | x                                 |
+| ------------------- | ------------------------ | ----------------------------------- |
+| Uses variable names | ✅                        | Only if you give its address        |
+| Formats output      | ✅ (limited by type)      | ✅ (you choose size & format freely) |
+| Follow pointers     | ✅ via *ptr             | ✅ directly with address             |
+| Good for            | Checking variable values | Raw memory inspection, dumps        |
+
+If you like, I can make a combined GDB cheat sheet for both print and x with all format/size options and examples so you can use it like a quick reference while debugging.
+
