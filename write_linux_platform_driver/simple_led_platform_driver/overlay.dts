@@ -1,0 +1,5 @@
+custom_gpio@0 {
+    compatible = "rpi,led-gpio17";
+    led-gpios = <&gpio 17 0>;
+    status = "okay";
+};

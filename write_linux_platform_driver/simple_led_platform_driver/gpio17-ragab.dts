@@ -1,0 +1,27 @@
+/dts-v1/;// Indicate that this is a Device Tree Source file and its version
+/plugin/;// Include the standard device tree definitions for the platform
+
+/ {// Root node of the device tree
+    // compatible = "brcm,bcm2835";// Specify the compatible string for the Raspberry Pi
+    // #address-cells = <1>;// Define the number of address cells for child nodes
+    // #size-cells = <1>;// Define the number of size cells for child nodes    
+    /*
+    Here we define a fragment to overlay our custom GPIO device node into the existing device tree structure.
+    We target the /soc node which is the system-on-chip node in the Raspberry Pi device tree.
+    Inside the overlay, we create a new node called custom_gpio@0 to represent our LED GPIO device.
+    We set the compatible property to "rpi,led-gpio17" which should match the compatible string in our driver.
+    We also define the led-gpios property to specify that GPIO17 is used for the LED and it is active-high (0).
+    Finally, we set the status property to "okay" to enable the device.
+    This overlay allows our platform driver to bind to this device when the kernel initializes the device tree.
+    */
+    fragment@0 {
+        target-path = "/soc";// Target the /soc node in the device tree
+        __overlay__ {// Create an overlay node
+            custom_gpio {// Define a new node for our custom GPIO device
+                compatible = "rpi,led-gpio17";// Set the compatible string for our LED GPIO device
+                led-gpios = <&gpio 17 0>; /* GPIO17, active-high */ // Define the GPIO used for the LED (GPIO17, active-high)
+                status = "okay";// Enable the device
+            };
+        };
+    };
+};

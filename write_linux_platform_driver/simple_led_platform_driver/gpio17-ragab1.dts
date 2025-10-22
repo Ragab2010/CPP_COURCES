@@ -1,0 +1,81 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    /* This overlay is compatible with the Broadcom BCM2711 SoC (used on Raspberry Pi 4) */
+    compatible = "brcm,bcm2711";
+
+    /*******************************************************
+     * fragment@0 - modifies the GPIO controller node
+     * -----------------------------------------------------
+     * This fragment adds configuration for specific GPIO pins.
+     * Each "gpioXX_pins" subnode describes how a given GPIO pin
+     * should be configured (direction, function, pull-up/down, etc.)
+     *******************************************************/
+    fragment@0 {
+        /* "target" points to the existing GPIO controller node (&gpio) */
+        target = <&gpio>;
+
+        /* "__overlay__" applies modifications or additions to that node */
+        __overlay__ {
+
+            /* Configure GPIO17 as an output, no pull-up/down */
+            gpio17_pins: gpio17_pins {
+                brcm,pins = <17>;      /* Physical GPIO pin number */
+                brcm,function = <1>;   /* 1 = Output function */
+                brcm,pull = <0>;       /* 0 = No pull-up / pull-down */
+            };
+
+            /* Configure GPIO14 as an output, no pull-up/down */
+            gpio14_pins: gpio14_pins {
+                brcm,pins = <14>;
+                brcm,function = <1>;   /* 1 = Output */
+                brcm,pull = <0>;       /* 0 = No pull-up / pull-down */
+            };
+        };
+    };
+
+    /*******************************************************
+     * fragment@1 - defines a new custom platform device node
+     * -----------------------------------------------------
+     * This fragment adds a new device node under "/soc" called
+     * "custom_gpio". It represents a simple LED device that
+     * uses a GPIO pin as output, controlled by a custom driver.
+     *******************************************************/
+    fragment@1 {
+        /* "target-path" points to the "/soc" node where this device should be added */
+        target-path = "/soc";
+
+        __overlay__ {
+            /* Define a new device node called "custom_gpio" */
+            custom_gpio: custom_gpio {
+                /* 'compatible' string — used by the driver to match this device.
+                 * Your platform driver should have a matching entry like:
+                 *   { .compatible = "rpi,led-gpio17" },
+                 */
+                compatible = "rpi,led-gpio17";
+
+                /* This property tells the driver which GPIO pin controls the LED.
+                 * Format: <&gpio <pin> <flags>>
+                 *   - &gpio → reference to the GPIO controller
+                 *   - <pin> → GPIO number
+                 *   - <flags> → 0 = active-high (set 1 to turn on LED)
+                 */
+                // led-gpios = <&gpio 17 0>;  /* Example using GPIO17 */
+                led-gpios = <&gpio 14 0>;     /* Example using GPIO14 */
+
+                /* Enable this device node */
+                status = "okay";
+
+                /* Specify pin control state names (standard Linux DT property) */
+                pinctrl-names = "default";
+
+                /* Bind the "default" pinctrl state to one of the pin configuration nodes
+                 * defined in fragment@0. This makes sure the GPIO is configured as output.
+                 */
+                // pinctrl-0 = <&gpio17_pins>;
+                pinctrl-0 = <&gpio14_pins>;
+            };
+        };
+    };
+};
