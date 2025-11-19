@@ -60,7 +60,7 @@ Each directory contains source code files and examples corresponding to specific
 
      - `semaphore/`: Examples for `std::counting_semaphore` (e.g., resource pools, thread signaling)
      - `latch_barrier/`: Examples for `std::latch` (e.g., worker initialization) and `std::barrier` (e.g., phase synchronization)
-   - [Watch the Playlist](https://youtube.com/playlist?list=PLz-QlVYhsl9zmbXmhxrD5tIe5lxOHEAhY&si=5C2J-EuqitN22ket)
+   - [Watch the Playlist](https://youtube.com/playlist?list=PLz-QlVYhsl9x2dpDrEEOpD9Z0ldZRByTB&si=1pu7dGvfBhNzGCev)
 
 ### 5. **Debugging with GDB**
    - Master debugging C/C++ programs using GDB, the GNU Debugger, with practical examples.
@@ -72,6 +72,21 @@ Each directory contains source code files and examples corresponding to specific
    - **Source Code**: [gdb_debugging/](https://github.com/Ragab2010/CPP_COURCES/tree/main/gdb_debugging)
      - Examples: `factorial.c`, `segfault_demo.c`, `call_example.c`
    - [Watch the Playlist](https://youtube.com/playlist?list=PLz-QlVYhsl9zMPXm0olSq6rngt_3X6Fzx&si=TDn9qdCKOlAlIuWV)
+
+### 6. **Linux Kernel: Writing a Platform Driver**
+   - Learn how to write real Linux kernel drivers for embedded systems (Raspberry Pi 4 + Yocto).
+   - From theory to hardware control — everything you need to understand the platform driver model.
+   - Topics include:
+     - SoC vs PC motherboard: buses & discovery
+     - Platform bus, device, driver, and matching process
+     - Device Tree overlays for GPIO17/14/4
+     - GPIO platform drivers with sysfs attributes
+     - Character device (`cdev`) interface
+     - Kernel structures: `kobject`, `kset`, `device_node`, `of_match_table`
+     - Full Yocto integration
+   - **Source Code & Overlays**: [linux_platform_driver/](https://github.com/Ragab2010/CPP_COURCES/tree/main/write_linux_platform_driver)
+     - Kernel modules, `.dts` overlays, Makefile, Yocto recipes
+   - [Watch the Full Video (2.5+ hours)](https://youtu.be/N93xfeFv640?si=NcesoH4p8tXotwes)
 
 ---
 
